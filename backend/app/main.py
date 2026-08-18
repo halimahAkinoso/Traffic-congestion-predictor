@@ -20,7 +20,7 @@ app = FastAPI(
 # We will replace this with your Netlify URL after deployment.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["traffic-congestion-predictor-app.netlify.app"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
