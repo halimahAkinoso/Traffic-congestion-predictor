@@ -1,0 +1,12 @@
+Validation Test,Status,Details
+Missing Values,PASS ✅,Missing Values Found: 0
+Duplicate Records,PASS ✅,Duplicate Records: 0
+Average Speed Validation,PASS ✅,Negative Speeds: 0
+Average Speed Validation,PASS ✅,Negative Speeds: 0
+Congestion Index Range,PASS ✅,Invalid Values: 0
+Hour Validation,PASS ✅,Invalid Hours: 0
+Weekend Flag,PASS ✅,Invalid Values: 0
+Peak Hour Flag,PASS ✅,Invalid Values: 0
+Congestion Category,PASS ✅,Invalid Categories: 0
+Speed Outliers,PASS ✅,Speeds Above 180 km/h: 0
+Traffic Density,PASS ✅,Negative Density Values: 0

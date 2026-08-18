@@ -1,0 +1,32 @@
+{
+    "model": "RandomForestClassifier",
+    "target": "congestion_category",
+    "classes": [
+        "Low",
+        "Moderate",
+        "High",
+        "Severe"
+    ],
+    "features": [
+        "segment_id",
+        "lat",
+        "lon",
+        "hour",
+        "avg_speed_kmh",
+        "density_veh_per_km",
+        "incidents",
+        "day_of_week",
+        "is_weekend",
+        "is_peak_hour",
+        "time_of_day"
+    ],
+    "train_size": 143719,
+    "test_size": 35930,
+    "congestion_thresholds": {
+        "q1": 26.4,
+        "q2": 38.0,
+        "q3": 49.5
+    },
+    "accuracy": 0.4345672140272753,
+    "weighted_f1": 0.3927633967460008
+}

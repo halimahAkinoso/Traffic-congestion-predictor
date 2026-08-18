@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+backend/venv/
+
+# Node
+node_modules/
+frontend/node_modules/
+dist/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+
+# ML Models
+
+# Large datasets
+dataset/raw/
+dataset/external/
+dataset/processed/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
