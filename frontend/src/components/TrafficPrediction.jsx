@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { predictTraffic } from "../services/api";
+import "../App.css";
 
 function TrafficPrediction() {
   const [form, setForm] = useState({
-    segment_id: "SEG001",
+    segment_id: "LAG-001",
     lat: 6.5244,
     lon: 3.3792,
     hour: 8,
@@ -23,8 +24,8 @@ function TrafficPrediction() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setForm((previous) => ({
-      ...previous,
+    setForm((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
@@ -39,7 +40,6 @@ function TrafficPrediction() {
     try {
       const prediction = await predictTraffic({
         ...form,
-
         lat: Number(form.lat),
         lon: Number(form.lon),
         hour: Number(form.hour),
@@ -52,262 +52,566 @@ function TrafficPrediction() {
 
       setResult(prediction);
     } catch (err) {
-      setError(err.message);
+      setError(
+        "Unable to generate prediction. Please check your connection and try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const getStatusClass = (category) => {
+    if (!category) return "status-default";
+
+    switch (category.toLowerCase()) {
+      case "low":
+        return "status-low";
+      case "moderate":
+        return "status-moderate";
+      case "high":
+        return "status-high";
+      case "severe":
+        return "status-severe";
+      default:
+        return "status-default";
+    }
+  };
+
+  const formatConfidence = (confidence) => {
+    if (confidence === undefined || confidence === null) return "—";
+
+    const value =
+      confidence <= 1 ? confidence * 100 : confidence;
+
+    return `${value.toFixed(1)}%`;
+  };
+
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <main className="app-shell">
 
-      <h1 className="text-3xl font-bold mb-2">
-        Lagos Traffic Congestion Predictor
-      </h1>
+      {/* Navigation */}
+      <nav className="navbar">
+        <div className="brand">
+          <div className="brand-icon">🚦</div>
 
-      <p className="text-gray-600 mb-6">
-        Enter current traffic conditions to predict the congestion level.
-      </p>
-
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-5 bg-white p-6 rounded-xl shadow"
-      >
-
-        {/* Segment */}
-        <div>
-          <label className="block font-medium mb-1">
-            Traffic Segment
-          </label>
-
-          <input
-            type="text"
-            name="segment_id"
-            value={form.segment_id}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-            placeholder="e.g. SEG001"
-          />
+          <div>
+            <h1>Lagos Traffic</h1>
+            <span>Congestion Predictor</span>
+          </div>
         </div>
 
-        {/* Latitude */}
-        <div>
-          <label className="block font-medium mb-1">
-            Latitude
-          </label>
-
-          <input
-            type="number"
-            step="any"
-            name="lat"
-            value={form.lat}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          />
+        <div className="nav-status">
+          <span className="online-dot"></span>
+          AI Prediction System
         </div>
+      </nav>
 
-        {/* Longitude */}
-        <div>
-          <label className="block font-medium mb-1">
-            Longitude
-          </label>
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-content">
 
-          <input
-            type="number"
-            step="any"
-            name="lon"
-            value={form.lon}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          />
-        </div>
+          <div className="hero-badge">
+            <span>✦</span>
+            AI-POWERED TRAFFIC INTELLIGENCE
+          </div>
 
-        {/* Hour */}
-        <div>
-          <label className="block font-medium mb-1">
-            Hour of Day
-          </label>
-
-          <input
-            type="number"
-            min="0"
-            max="23"
-            name="hour"
-            value={form.hour}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          />
-        </div>
-
-        {/* Average Speed */}
-        <div>
-          <label className="block font-medium mb-1">
-            Average Speed (km/h)
-          </label>
-
-          <input
-            type="number"
-            min="0"
-            step="any"
-            name="avg_speed_kmh"
-            value={form.avg_speed_kmh}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          />
-        </div>
-
-        {/* Density */}
-        <div>
-          <label className="block font-medium mb-1">
-            Traffic Density (vehicles/km)
-          </label>
-
-          <input
-            type="number"
-            min="0"
-            step="any"
-            name="density_veh_per_km"
-            value={form.density_veh_per_km}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          />
-        </div>
-
-        {/* Incidents */}
-        <div>
-          <label className="block font-medium mb-1">
-            Number of Incidents
-          </label>
-
-          <input
-            type="number"
-            min="0"
-            name="incidents"
-            value={form.incidents}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          />
-        </div>
-
-        {/* Day */}
-        <div>
-          <label className="block font-medium mb-1">
-            Day of Week
-          </label>
-
-          <select
-            name="day_of_week"
-            value={form.day_of_week}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          >
-            <option>Monday</option>
-            <option>Tuesday</option>
-            <option>Wednesday</option>
-            <option>Thursday</option>
-            <option>Friday</option>
-            <option>Saturday</option>
-            <option>Sunday</option>
-          </select>
-        </div>
-
-        {/* Weekend */}
-        <div>
-          <label className="block font-medium mb-1">
-            Weekend
-          </label>
-
-          <select
-            name="is_weekend"
-            value={form.is_weekend}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          >
-            <option value={0}>No</option>
-            <option value={1}>Yes</option>
-          </select>
-        </div>
-
-        {/* Peak Hour */}
-        <div>
-          <label className="block font-medium mb-1">
-            Peak Hour
-          </label>
-
-          <select
-            name="is_peak_hour"
-            value={form.is_peak_hour}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          >
-            <option value={0}>No</option>
-            <option value={1}>Yes</option>
-          </select>
-        </div>
-
-        {/* Time of Day */}
-        <div>
-          <label className="block font-medium mb-1">
-            Time of Day
-          </label>
-
-          <select
-            name="time_of_day"
-            value={form.time_of_day}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-3"
-          >
-            <option>Morning</option>
-            <option>Afternoon</option>
-            <option>Evening</option>
-            <option>Night</option>
-          </select>
-        </div>
-
-        {/* Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
-        >
-          {loading ? "Predicting..." : "Predict Congestion"}
-        </button>
-
-      </form>
-
-      {/* Error */}
-      {error && (
-        <div className="mt-6 p-4 bg-red-100 text-red-700 rounded-lg">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {/* Result */}
-      {result && (
-        <div className="mt-6 p-6 bg-gray-100 rounded-xl">
-
-          <h2 className="text-xl font-bold mb-3">
-            Prediction Result
+          <h2>
+            Predict traffic.
+            <br />
+            <span>Plan your journey.</span>
           </h2>
 
-          <p className="text-lg">
-            Congestion Level:
-            <strong className="ml-2">
-              {result.congestion_category}
-            </strong>
+          <p>
+            Get intelligent congestion estimates for Lagos roads
+            using machine learning and real-time traffic conditions.
           </p>
 
-          <p className="mt-2">
-            Confidence:
-            <strong className="ml-2">
-              {(result.confidence * 100).toFixed(1)}%
-            </strong>
-          </p>
+          <div className="hero-stats">
+            <div>
+              <strong>4</strong>
+              <span>Congestion Levels</span>
+            </div>
+
+            <div>
+              <strong>AI</strong>
+              <span>Prediction Model</span>
+            </div>
+
+            <div>
+              <strong>24/7</strong>
+              <span>Prediction Access</span>
+            </div>
+          </div>
 
         </div>
-      )}
 
-    </div>
+        <div className="hero-visual">
+          <div className="road-card">
+
+            <div className="road-header">
+              <span>LIVE TRAFFIC OUTLOOK</span>
+              <span className="live-indicator">
+                ● LIVE
+              </span>
+            </div>
+
+            <div className="road-map">
+
+              <div className="road-line road-one"></div>
+              <div className="road-line road-two"></div>
+              <div className="road-line road-three"></div>
+
+              <div className="location-point point-one">
+                <span></span>
+              </div>
+
+              <div className="location-point point-two">
+                <span></span>
+              </div>
+
+              <div className="location-point point-three">
+                <span></span>
+              </div>
+
+              <div className="map-label label-one">
+                Ikeja
+              </div>
+
+              <div className="map-label label-two">
+                Lagos Island
+              </div>
+
+              <div className="map-label label-three">
+                Victoria Island
+              </div>
+
+            </div>
+
+            <div className="traffic-legend">
+              <span>
+                <i className="legend-dot low"></i>
+                Low
+              </span>
+
+              <span>
+                <i className="legend-dot moderate"></i>
+                Moderate
+              </span>
+
+              <span>
+                <i className="legend-dot high"></i>
+                High
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Prediction Area */}
+      <section className="prediction-section">
+
+        <div className="section-heading">
+          <div>
+            <span className="section-kicker">
+              TRAFFIC ANALYSIS
+            </span>
+
+            <h3>Predict congestion</h3>
+
+            <p>
+              Enter the current road conditions to generate an AI
+              congestion prediction.
+            </p>
+          </div>
+
+          <div className="model-badge">
+            <span>●</span>
+            Model Online
+          </div>
+        </div>
+
+        <div className="prediction-grid">
+
+          {/* Form */}
+          <form
+            className="prediction-card"
+            onSubmit={handleSubmit}
+          >
+
+            <div className="card-title">
+              <div className="title-icon">📍</div>
+
+              <div>
+                <h4>Traffic conditions</h4>
+                <p>Provide current road information</p>
+              </div>
+            </div>
+
+            <div className="form-grid">
+
+              <div className="field full-width">
+                <label>Traffic Segment</label>
+
+                <input
+                  type="text"
+                  name="segment_id"
+                  value={form.segment_id}
+                  onChange={handleChange}
+                  placeholder="e.g. LAG-001"
+                />
+              </div>
+
+              <div className="field">
+                <label>Latitude</label>
+
+                <input
+                  type="number"
+                  step="any"
+                  name="lat"
+                  value={form.lat}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="field">
+                <label>Longitude</label>
+
+                <input
+                  type="number"
+                  step="any"
+                  name="lon"
+                  value={form.lon}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="field">
+                <label>Hour of Day</label>
+
+                <input
+                  type="number"
+                  min="0"
+                  max="23"
+                  name="hour"
+                  value={form.hour}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="field">
+                <label>Average Speed</label>
+
+                <div className="input-with-unit">
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    name="avg_speed_kmh"
+                    value={form.avg_speed_kmh}
+                    onChange={handleChange}
+                  />
+                  <span>km/h</span>
+                </div>
+              </div>
+
+              <div className="field">
+                <label>Traffic Density</label>
+
+                <div className="input-with-unit">
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    name="density_veh_per_km"
+                    value={form.density_veh_per_km}
+                    onChange={handleChange}
+                  />
+                  <span>veh/km</span>
+                </div>
+              </div>
+
+              <div className="field">
+                <label>Road Incidents</label>
+
+                <input
+                  type="number"
+                  min="0"
+                  name="incidents"
+                  value={form.incidents}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="field">
+                <label>Day</label>
+
+                <select
+                  name="day_of_week"
+                  value={form.day_of_week}
+                  onChange={handleChange}
+                >
+                  <option>Monday</option>
+                  <option>Tuesday</option>
+                  <option>Wednesday</option>
+                  <option>Thursday</option>
+                  <option>Friday</option>
+                  <option>Saturday</option>
+                  <option>Sunday</option>
+                </select>
+              </div>
+
+              <div className="field">
+                <label>Time of Day</label>
+
+                <select
+                  name="time_of_day"
+                  value={form.time_of_day}
+                  onChange={handleChange}
+                >
+                  <option>Morning</option>
+                  <option>Afternoon</option>
+                  <option>Evening</option>
+                  <option>Night</option>
+                </select>
+              </div>
+
+              <div className="field">
+                <label>Weekend</label>
+
+                <select
+                  name="is_weekend"
+                  value={form.is_weekend}
+                  onChange={handleChange}
+                >
+                  <option value={0}>No</option>
+                  <option value={1}>Yes</option>
+                </select>
+              </div>
+
+              <div className="field">
+                <label>Peak Hour</label>
+
+                <select
+                  name="is_peak_hour"
+                  value={form.is_peak_hour}
+                  onChange={handleChange}
+                >
+                  <option value={0}>No</option>
+                  <option value={1}>Yes</option>
+                </select>
+              </div>
+
+            </div>
+
+            <button
+              type="submit"
+              className="predict-button"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner"></span>
+                  Analyzing traffic...
+                </>
+              ) : (
+                <>
+                  Predict Congestion
+                  <span>→</span>
+                </>
+              )}
+            </button>
+
+            {error && (
+              <div className="error-message">
+                <span>!</span>
+                {error}
+              </div>
+            )}
+
+          </form>
+
+          {/* Result */}
+          <div className="result-card">
+
+            {!result && !loading && (
+              <div className="empty-result">
+
+                <div className="prediction-icon">
+                  ✦
+                </div>
+
+                <h4>Prediction result</h4>
+
+                <p>
+                  Your AI-generated congestion estimate
+                  will appear here.
+                </p>
+
+                <div className="result-placeholder">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+              </div>
+            )}
+
+            {loading && (
+              <div className="empty-result">
+
+                <div className="loading-orbit">
+                  <div></div>
+                </div>
+
+                <h4>Analyzing traffic...</h4>
+
+                <p>
+                  Our machine learning model is evaluating
+                  the traffic conditions.
+                </p>
+
+              </div>
+            )}
+
+            {result && (
+              <div className="result-content">
+
+                <div className="result-top">
+                  <span className="section-kicker">
+                    AI PREDICTION
+                  </span>
+
+                  <span className="result-time">
+                    Just now
+                  </span>
+                </div>
+
+                <div
+                  className={`congestion-status ${getStatusClass(
+                    result.congestion_category
+                  )}`}
+                >
+                  <div className="status-icon">
+                    {result.congestion_category?.toLowerCase() ===
+                    "low"
+                      ? "✓"
+                      : result.congestion_category?.toLowerCase() ===
+                        "moderate"
+                      ? "!"
+                      : "⚠"}
+                  </div>
+
+                  <div>
+                    <span>Congestion level</span>
+
+                    <strong>
+                      {result.congestion_category}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="confidence-box">
+
+                  <div className="confidence-header">
+                    <span>Model confidence</span>
+
+                    <strong>
+                      {formatConfidence(result.confidence)}
+                    </strong>
+                  </div>
+
+                  <div className="confidence-track">
+                    <div
+                      className="confidence-fill"
+                      style={{
+                        width: formatConfidence(
+                          result.confidence
+                        ),
+                      }}
+                    ></div>
+                  </div>
+
+                </div>
+
+                <div className="result-summary">
+
+                  <div>
+                    <span>Speed</span>
+                    <strong>
+                      {form.avg_speed_kmh} km/h
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Density</span>
+                    <strong>
+                      {form.density_veh_per_km} veh/km
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Time</span>
+                    <strong>
+                      {form.hour}:00
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Day</span>
+                    <strong>
+                      {form.day_of_week}
+                    </strong>
+                  </div>
+
+                </div>
+
+                <div className="recommendation">
+                  <span>💡</span>
+
+                  <div>
+                    <strong>Travel insight</strong>
+
+                    <p>
+                      {result.congestion_category
+                        ?.toLowerCase() === "low"
+                        ? "Traffic conditions look favorable. This may be a good time to travel."
+                        : result.congestion_category
+                            ?.toLowerCase() === "moderate"
+                        ? "Expect some delays. Consider allowing additional travel time."
+                        : result.congestion_category
+                            ?.toLowerCase() === "high"
+                        ? "Heavy traffic is expected. Consider an alternative route or travel time."
+                        : "Severe congestion is expected. Consider postponing your journey if possible."}
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer">
+
+        <div>
+          <strong>🚦 Lagos Traffic Predictor</strong>
+          <span>
+            AI-powered congestion intelligence
+          </span>
+        </div>
+
+        <p>
+          Built with React, FastAPI & Machine Learning
+        </p>
+
+      </footer>
+
+    </main>
   );
 }
 
