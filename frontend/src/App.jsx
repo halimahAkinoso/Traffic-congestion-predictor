@@ -1,10 +1,7 @@
 import TrafficPrediction from "./components/TrafficPrediction";
 
 function App() {
-  return (
-    <TrafficPrediction />
-  );
-  
+  return <TrafficPrediction />;
 }
 
 export default App;

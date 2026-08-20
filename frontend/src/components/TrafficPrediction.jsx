@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { predictTraffic } from "../services/api";
 import "../App.css";
+import LagosTrafficMap from "./LagosTrafficMap";
 
 function TrafficPrediction() {
   const [form, setForm] = useState({
@@ -52,6 +53,8 @@ function TrafficPrediction() {
 
       setResult(prediction);
     } catch (err) {
+      console.error("Prediction error:", err);
+
       setError(
         "Unable to generate prediction. Please check your connection and try again."
       );
@@ -78,10 +81,11 @@ function TrafficPrediction() {
   };
 
   const formatConfidence = (confidence) => {
-    if (confidence === undefined || confidence === null) return "—";
+    if (confidence === undefined || confidence === null) {
+      return "—";
+    }
 
-    const value =
-      confidence <= 1 ? confidence * 100 : confidence;
+    const value = confidence <= 1 ? confidence * 100 : confidence;
 
     return `${value.toFixed(1)}%`;
   };
@@ -89,7 +93,9 @@ function TrafficPrediction() {
   return (
     <main className="app-shell">
 
-      {/* Navigation */}
+      {/* =========================
+          NAVIGATION
+      ========================== */}
       <nav className="navbar">
         <div className="brand">
           <div className="brand-icon">🚦</div>
@@ -106,7 +112,10 @@ function TrafficPrediction() {
         </div>
       </nav>
 
-      {/* Hero */}
+
+      {/* =========================
+          HERO
+      ========================== */}
       <section className="hero">
         <div className="hero-content">
 
@@ -127,6 +136,7 @@ function TrafficPrediction() {
           </p>
 
           <div className="hero-stats">
+
             <div>
               <strong>4</strong>
               <span>Congestion Levels</span>
@@ -141,15 +151,18 @@ function TrafficPrediction() {
               <strong>24/7</strong>
               <span>Prediction Access</span>
             </div>
+
           </div>
 
         </div>
 
         <div className="hero-visual">
+
           <div className="road-card">
 
             <div className="road-header">
               <span>LIVE TRAFFIC OUTLOOK</span>
+
               <span className="live-indicator">
                 ● LIVE
               </span>
@@ -188,6 +201,7 @@ function TrafficPrediction() {
             </div>
 
             <div className="traffic-legend">
+
               <span>
                 <i className="legend-dot low"></i>
                 Low
@@ -202,56 +216,86 @@ function TrafficPrediction() {
                 <i className="legend-dot high"></i>
                 High
               </span>
+
             </div>
 
           </div>
+
         </div>
       </section>
 
-      {/* Prediction Area */}
+
+      {/* =========================
+          PREDICTION AREA
+      ========================== */}
       <section className="prediction-section">
 
         <div className="section-heading">
+
           <div>
+
             <span className="section-kicker">
               TRAFFIC ANALYSIS
             </span>
 
-            <h3>Predict congestion</h3>
+            <h3>
+              Predict congestion
+            </h3>
 
             <p>
               Enter the current road conditions to generate an AI
               congestion prediction.
             </p>
+
           </div>
 
           <div className="model-badge">
             <span>●</span>
             Model Online
           </div>
+
         </div>
 
+
+        {/* =========================
+            FORM + RESULT
+        ========================== */}
         <div className="prediction-grid">
 
-          {/* Form */}
+          {/* =========================
+              FORM
+          ========================== */}
           <form
             className="prediction-card"
             onSubmit={handleSubmit}
           >
 
             <div className="card-title">
-              <div className="title-icon">📍</div>
+
+              <div className="title-icon">
+                📍
+              </div>
 
               <div>
-                <h4>Traffic conditions</h4>
-                <p>Provide current road information</p>
+                <h4>
+                  Traffic conditions
+                </h4>
+
+                <p>
+                  Provide current road information
+                </p>
               </div>
+
             </div>
+
 
             <div className="form-grid">
 
               <div className="field full-width">
-                <label>Traffic Segment</label>
+
+                <label>
+                  Traffic Segment
+                </label>
 
                 <input
                   type="text"
@@ -260,10 +304,15 @@ function TrafficPrediction() {
                   onChange={handleChange}
                   placeholder="e.g. LAG-001"
                 />
+
               </div>
 
+
               <div className="field">
-                <label>Latitude</label>
+
+                <label>
+                  Latitude
+                </label>
 
                 <input
                   type="number"
@@ -272,10 +321,15 @@ function TrafficPrediction() {
                   value={form.lat}
                   onChange={handleChange}
                 />
+
               </div>
 
+
               <div className="field">
-                <label>Longitude</label>
+
+                <label>
+                  Longitude
+                </label>
 
                 <input
                   type="number"
@@ -284,10 +338,15 @@ function TrafficPrediction() {
                   value={form.lon}
                   onChange={handleChange}
                 />
+
               </div>
 
+
               <div className="field">
-                <label>Hour of Day</label>
+
+                <label>
+                  Hour of Day
+                </label>
 
                 <input
                   type="number"
@@ -297,12 +356,18 @@ function TrafficPrediction() {
                   value={form.hour}
                   onChange={handleChange}
                 />
+
               </div>
 
+
               <div className="field">
-                <label>Average Speed</label>
+
+                <label>
+                  Average Speed
+                </label>
 
                 <div className="input-with-unit">
+
                   <input
                     type="number"
                     min="0"
@@ -311,14 +376,24 @@ function TrafficPrediction() {
                     value={form.avg_speed_kmh}
                     onChange={handleChange}
                   />
-                  <span>km/h</span>
+
+                  <span>
+                    km/h
+                  </span>
+
                 </div>
+
               </div>
 
+
               <div className="field">
-                <label>Traffic Density</label>
+
+                <label>
+                  Traffic Density
+                </label>
 
                 <div className="input-with-unit">
+
                   <input
                     type="number"
                     min="0"
@@ -327,12 +402,21 @@ function TrafficPrediction() {
                     value={form.density_veh_per_km}
                     onChange={handleChange}
                   />
-                  <span>veh/km</span>
+
+                  <span>
+                    veh/km
+                  </span>
+
                 </div>
+
               </div>
 
+
               <div className="field">
-                <label>Road Incidents</label>
+
+                <label>
+                  Road Incidents
+                </label>
 
                 <input
                   type="number"
@@ -341,10 +425,15 @@ function TrafficPrediction() {
                   value={form.incidents}
                   onChange={handleChange}
                 />
+
               </div>
 
+
               <div className="field">
-                <label>Day</label>
+
+                <label>
+                  Day
+                </label>
 
                 <select
                   name="day_of_week"
@@ -359,10 +448,15 @@ function TrafficPrediction() {
                   <option>Saturday</option>
                   <option>Sunday</option>
                 </select>
+
               </div>
 
+
               <div className="field">
-                <label>Time of Day</label>
+
+                <label>
+                  Time of Day
+                </label>
 
                 <select
                   name="time_of_day"
@@ -374,10 +468,15 @@ function TrafficPrediction() {
                   <option>Evening</option>
                   <option>Night</option>
                 </select>
+
               </div>
 
+
               <div className="field">
-                <label>Weekend</label>
+
+                <label>
+                  Weekend
+                </label>
 
                 <select
                   name="is_weekend"
@@ -387,10 +486,15 @@ function TrafficPrediction() {
                   <option value={0}>No</option>
                   <option value={1}>Yes</option>
                 </select>
+
               </div>
 
+
               <div className="field">
-                <label>Peak Hour</label>
+
+                <label>
+                  Peak Hour
+                </label>
 
                 <select
                   name="is_peak_hour"
@@ -400,15 +504,18 @@ function TrafficPrediction() {
                   <option value={0}>No</option>
                   <option value={1}>Yes</option>
                 </select>
+
               </div>
 
             </div>
+
 
             <button
               type="submit"
               className="predict-button"
               disabled={loading}
             >
+
               {loading ? (
                 <>
                   <span className="spinner"></span>
@@ -420,7 +527,9 @@ function TrafficPrediction() {
                   <span>→</span>
                 </>
               )}
+
             </button>
+
 
             {error && (
               <div className="error-message">
@@ -431,7 +540,10 @@ function TrafficPrediction() {
 
           </form>
 
-          {/* Result */}
+
+          {/* =========================
+              AI PREDICTION RESULT
+          ========================== */}
           <div className="result-card">
 
             {!result && !loading && (
@@ -441,7 +553,9 @@ function TrafficPrediction() {
                   ✦
                 </div>
 
-                <h4>Prediction result</h4>
+                <h4>
+                  Prediction result
+                </h4>
 
                 <p>
                   Your AI-generated congestion estimate
@@ -457,6 +571,7 @@ function TrafficPrediction() {
               </div>
             )}
 
+
             {loading && (
               <div className="empty-result">
 
@@ -464,7 +579,9 @@ function TrafficPrediction() {
                   <div></div>
                 </div>
 
-                <h4>Analyzing traffic...</h4>
+                <h4>
+                  Analyzing traffic...
+                </h4>
 
                 <p>
                   Our machine learning model is evaluating
@@ -474,10 +591,12 @@ function TrafficPrediction() {
               </div>
             )}
 
+
             {result && (
               <div className="result-content">
 
                 <div className="result-top">
+
                   <span className="section-kicker">
                     AI PREDICTION
                   </span>
@@ -485,14 +604,18 @@ function TrafficPrediction() {
                   <span className="result-time">
                     Just now
                   </span>
+
                 </div>
+
 
                 <div
                   className={`congestion-status ${getStatusClass(
                     result.congestion_category
                   )}`}
                 >
+
                   <div className="status-icon">
+
                     {result.congestion_category?.toLowerCase() ===
                     "low"
                       ? "✓"
@@ -500,28 +623,44 @@ function TrafficPrediction() {
                         "moderate"
                       ? "!"
                       : "⚠"}
+
                   </div>
 
+
                   <div>
-                    <span>Congestion level</span>
+
+                    <span>
+                      Congestion level
+                    </span>
 
                     <strong>
                       {result.congestion_category}
                     </strong>
+
                   </div>
+
                 </div>
+
 
                 <div className="confidence-box">
 
                   <div className="confidence-header">
-                    <span>Model confidence</span>
+
+                    <span>
+                      Model confidence
+                    </span>
 
                     <strong>
-                      {formatConfidence(result.confidence)}
+                      {formatConfidence(
+                        result.confidence
+                      )}
                     </strong>
+
                   </div>
 
+
                   <div className="confidence-track">
+
                     <div
                       className="confidence-fill"
                       style={{
@@ -530,35 +669,52 @@ function TrafficPrediction() {
                         ),
                       }}
                     ></div>
+
                   </div>
 
                 </div>
 
+
                 <div className="result-summary">
 
                   <div>
-                    <span>Speed</span>
+                    <span>
+                      Speed
+                    </span>
+
                     <strong>
                       {form.avg_speed_kmh} km/h
                     </strong>
                   </div>
 
+
                   <div>
-                    <span>Density</span>
+                    <span>
+                      Density
+                    </span>
+
                     <strong>
                       {form.density_veh_per_km} veh/km
                     </strong>
                   </div>
 
+
                   <div>
-                    <span>Time</span>
+                    <span>
+                      Time
+                    </span>
+
                     <strong>
                       {form.hour}:00
                     </strong>
                   </div>
 
+
                   <div>
-                    <span>Day</span>
+                    <span>
+                      Day
+                    </span>
+
                     <strong>
                       {form.day_of_week}
                     </strong>
@@ -566,13 +722,21 @@ function TrafficPrediction() {
 
                 </div>
 
+
                 <div className="recommendation">
-                  <span>💡</span>
+
+                  <span>
+                    💡
+                  </span>
 
                   <div>
-                    <strong>Travel insight</strong>
+
+                    <strong>
+                      Travel insight
+                    </strong>
 
                     <p>
+
                       {result.congestion_category
                         ?.toLowerCase() === "low"
                         ? "Traffic conditions look favorable. This may be a good time to travel."
@@ -583,8 +747,11 @@ function TrafficPrediction() {
                             ?.toLowerCase() === "high"
                         ? "Heavy traffic is expected. Consider an alternative route or travel time."
                         : "Severe congestion is expected. Consider postponing your journey if possible."}
+
                     </p>
+
                   </div>
+
                 </div>
 
               </div>
@@ -593,16 +760,71 @@ function TrafficPrediction() {
           </div>
 
         </div>
+
+
+        {/* =====================================================
+            REAL LAGOS MAP
+            THIS IS THE NEW PART
+            IT IS OUTSIDE prediction-grid, SO IT APPEARS
+            BELOW THE FORM AND AI PREDICTION RESULT.
+        ====================================================== */}
+
+        {result && (
+          <section className="map-section">
+
+            <div className="map-header">
+
+              <div>
+
+                <span className="map-eyebrow">
+                  LOCATION ANALYSIS
+                </span>
+
+                <h2>
+                  Lagos Traffic Map
+                </h2>
+
+                <p>
+                  Predicted congestion at the selected location.
+                </p>
+
+              </div>
+
+
+              <div className="map-status">
+                {result.congestion_category}
+              </div>
+
+            </div>
+
+
+            <LagosTrafficMap
+              latitude={Number(form.lat)}
+              longitude={Number(form.lon)}
+              congestion={result.congestion_category}
+            />
+
+          </section>
+        )}
+
       </section>
 
-      {/* Footer */}
+
+      {/* =========================
+          FOOTER
+      ========================== */}
       <footer className="footer">
 
         <div>
-          <strong>🚦 Lagos Traffic Predictor</strong>
+
+          <strong>
+            🚦 Lagos Traffic Predictor
+          </strong>
+
           <span>
             AI-powered congestion intelligence
           </span>
+
         </div>
 
         <p>
